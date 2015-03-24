@@ -1,5 +1,5 @@
 package iCrawler;
-
+import java.util.Scanner;
 import java.io.IOException;
 import java.sql.*;
 import org.jsoup.Jsoup;
@@ -9,14 +9,23 @@ import org.jsoup.select.Elements;
  
 public class Main {
 	public static Database database = new Database();
- 
+	static Scanner userIn= new Scanner(System.in);
 	public static void main(String[] args) throws SQLException, IOException {
+		System.out.println("Introduce the search term");
+		String searchIt=userIn.nextLine();
+		
+		System.out.println("Introduce the full link (ex. www.mcgill.ca)");
+		String a=userIn.nextLine();
+		String webUrl = "http://"+a;
 		database.sqlStart1("TRUNCATE Resource;");
-		processPage("http://www.mit.edu");
+		processPage(webUrl,searchIt);
 	}
  
-	public static void processPage(String URL) throws SQLException, IOException{
+	public static void processPage(String URL, String searchTerm) throws SQLException, IOException{
 		//check if the given URL is already in database
+		
+		String addRess=URL.substring(11);
+		System.out.println(addRess);
 		String sql = "select * from Resource where URL = '"+URL+"'";
 		ResultSet rs = database.sqlStart2(sql);
 		if(rs.next()){
@@ -29,17 +38,18 @@ public class Main {
 			stmt.execute();
  
 			//get useful information
-			Document doc = Jsoup.connect("http://www.mit.edu/").get();
- 
-			if(doc.text().contains("technology")){
+			
+			Document doc = Jsoup.connect(URL).get();
+			
+			if(doc.text().contains(searchTerm)){
 				System.out.println(URL);
 			}
  
 			//get links
 			Elements questions = doc.select("a[href]");
 			for(Element link: questions){
-				if(link.attr("href").contains("mit.edu"))
-					processPage(link.attr("abs:href"));
+				if(link.attr("href").contains(addRess))
+					processPage(link.attr("abs:href"), searchTerm);
 			}
 		}
 	}

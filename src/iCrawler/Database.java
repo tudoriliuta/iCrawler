@@ -8,8 +8,8 @@ public class Database {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://localhost:3306/iCrawler";
-			initiate = DriverManager.getConnection(url, "root", "");
-			System.out.println("initiating");
+			//user name = root and the space for password is left blank = no password
+			initiate = DriverManager.getConnection(url, "root", ""); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
